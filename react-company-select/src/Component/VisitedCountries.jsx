@@ -1,6 +1,6 @@
 // VisitedCountries.js
 import React from 'react';
-import Continent from './Continent';
+import Continent from './continent';
 
 const VisitedCountries = ({ id, label, value, onChange }) => {
   const handleContinentChange = (continentId) => {

@@ -1,8 +1,8 @@
 // App.js
 import React from 'react';
 import { JsonForms } from '@jsonforms/react';
-import { materialCells } from '@jsonforms/material-renderers';
-import VisitedCountries from './Component/VisitedCountries';
+import { materialCells ,materialRenderers} from '@jsonforms/material-renderers';
+import VisitedCountries from './component/visitedCountries';
 
 const countries = [
   { id: 'Europe', name: 'Europe', countries: ['Belgium', 'France', 'Germany'] },
@@ -59,7 +59,8 @@ const App = () => {
       schema={schema}
       uischema={uischema}
       data={data}
-      renderers={materialCells}
+      renderers={materialRenderers}
+      cells={materialCells}
       onChange={(data) => console.log(data)}
     />
   );
