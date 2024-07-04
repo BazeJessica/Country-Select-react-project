@@ -1,42 +1,68 @@
-import VisitedCountries from "./Component/VisitedCountries";
+// App.js
+import React from 'react';
+import { JsonForms } from '@jsonforms/react';
+import { materialCells } from '@jsonforms/material-renderers';
+import VisitedCountries from './VisitedCountries';
 
-// schemas.js
- export const schema = {
-    type: "object",
-    properties: {
-      name: {
-        type: "string",
-        minLength: 3,
-        title: "Name",
-      },
-      visitedCountries: {
-        type: "array",
-        title: "Visited Countries",
-        items: {
-          type: "string"
-        },
-        customRenderer: VisitedCountries,
-      },
+const countries = [
+  { id: 'Europe', name: 'Europe', countries: ['Belgium', 'France', 'Germany'] },
+  { id: 'Africa', name: 'Africa', countries: ['Egypt', 'South Africa', 'Morocco'] },
+  // ...
+];
+
+const schema = {
+  type: 'object',
+  properties: {
+    name: {
+      type: 'string',
+      title: 'Name',
     },
-    required: ["name"]
-  };
-  
-  
-  export const uischema = {
-    type: "VerticalLayout",
-    elements: [
-      {
-        type: "Control",
-        scope: "#/properties/name",
-        label: "Name"
+    visitedCountries: {
+      type: 'array',
+      title: 'Visited Countries',
+      items: {
+        type: 'string',
       },
-      {
-        type: "Control",
-        scope: "#/properties/visitedCountries",
-        options: {
-          multi: true
-        }
+      customRenderer: VisitedCountries,
+    },
+  },
+};
+
+const uischema = {
+  type: "VerticalLayout",
+  elements: [
+    {
+      type: "Control",
+      scope: "#/properties/name",
+      label: "Name"
+    },
+    {
+      type: "Control",
+      scope: "#/properties/visitedCountries",
+      options: {
+        multi: true
       }
-    ]
-  };
-  
+    }
+  ]
+};
+
+const data = {
+  name: '',
+  visitedCountries: [],
+};
+
+const Schema= () => {
+  return (
+    <JsonForms
+      // fetch = {Fetch}
+      schema={schema}
+      uischema={uischema}
+      data={data}
+      renderers={materialRenderers}
+      cells={materialCells}
+      onChange={(data) => console.log(data)}
+    />
+  );
+};
+
+export default Schema;

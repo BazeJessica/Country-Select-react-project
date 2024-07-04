@@ -1,17 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import Continent from "./continents";
+// VisitedCountries.js
+import React from 'react';
+import Continent from './Continent';
 
 const VisitedCountries = ({ id, label, value, onChange }) => {
-  const [continents, setContinents] = useState([]);
-
-  useEffect(() => {
-    fetch('https://example.com/api/continents')
-      .then(response => response.json())
-      .then(data => setContinents(data));
-  }, []);
-
   const handleContinentChange = (continentId) => {
-    const continent = continents.find((c) => c.id === continentId);
+    const continent = countries.find((c) => c.id === continentId);
     if (continent) {
       const selectedCountries = continent.countries;
       onChange(selectedCountries);
@@ -22,7 +15,7 @@ const VisitedCountries = ({ id, label, value, onChange }) => {
     <div>
       <label>{label}</label>
       <ul>
-        {continents.map((continent) => (
+        {countries.map((continent) => (
           <Continent
             key={continent.id}
             continent={continent}

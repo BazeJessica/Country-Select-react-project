@@ -1,59 +1,17 @@
-import React from 'react';
-import { JsonForms } from '@jsonforms/react';
-import { materialCells, materialRenderers } from '@jsonforms/material-renderers';
-import VisitedCountries from './component/visitedCountries';
+import React from "react";
+import Fetch from "./Component/Fetch";
+// import Schema from "./Schema";
 
-const schema = {
-  type: 'object',
-  properties: {
-    name: {
-      type: 'string',
-      title: 'Name',
-    },
-    visitedCountries: {
-      type: 'array',
-      title: 'Visited Countries',
-      items: {
-        type: 'string',
-      },
-      customRenderer: VisitedCountries,
-    },
-  },
-};
 
-const uischema = {
-  type: "VerticalLayout",
-  elements: [
-    {
-      type: "Control",
-      scope: "#/properties/name",
-      label: "Name"
-    },
-    {
-      type: "Control",
-      scope: "#/properties/visitedCountries",
-      options: {
-        multi: true
-      }
-    }
-  ]
-};
-
-const data = {
-  name: '',
-  visitedCountries: [],
-};
-
-const App = () => {
+const App= () => {
   return (
-    <JsonForms
-      schema={schema}
-      uischema={uischema}
-      data={data}
-      renderers={materialRenderers}
-      cells={materialCells}
-      onChange={(data) => console.log(data)}
-    />
+   <>
+   
+    <Fetch />
+   
+   </>
+     
+    
   );
 };
 
