@@ -1,14 +1,7 @@
-// App.js
 import React from 'react';
 import { JsonForms } from '@jsonforms/react';
-import { materialCells ,materialRenderers} from '@jsonforms/material-renderers';
+import { materialCells, materialRenderers } from '@jsonforms/material-renderers';
 import VisitedCountries from './component/visitedCountries';
-
-const countries = [
-  { id: 'Europe', name: 'Europe', countries: ['Belgium', 'France', 'Germany'] },
-  { id: 'Africa', name: 'Africa', countries: ['Egypt', 'South Africa', 'Morocco'] },
-  // ...
-];
 
 const schema = {
   type: 'object',
@@ -28,7 +21,6 @@ const schema = {
   },
 };
 
-
 const uischema = {
   type: "VerticalLayout",
   elements: [
@@ -46,7 +38,6 @@ const uischema = {
     }
   ]
 };
-
 
 const data = {
   name: '',
