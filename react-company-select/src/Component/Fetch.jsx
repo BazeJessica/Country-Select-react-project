@@ -1,8 +1,10 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Checkbox, FormControl, InputLabel, MenuItem, Select, List, ListItem, ListItemIcon, ListItemText, Box } from '@mui/material';
 
 const Fetch = () => {
   const [countries, setCountries] = useState([]);
   const [selectedContinent, setSelectedContinent] = useState('');
+  const [selectedCountries, setSelectedCountries] = useState([]);
 
   useEffect(() => {
     fetch('https://restcountries.com/v2/all')
@@ -22,8 +24,21 @@ const Fetch = () => {
     'Antarctic Ocean'
   ];
 
-  const handleContinentChange = (e) => {
-    setSelectedContinent(e.target.value);
+  const handleContinentChange = (event) => {
+    setSelectedContinent(event.target.value);
+  };
+
+  const handleCountryToggle = (countryName) => () => {
+    const currentIndex = selectedCountries.indexOf(countryName);
+    const newSelectedCountries = [...selectedCountries];
+
+    if (currentIndex === -1) {
+      newSelectedCountries.push(countryName);
+    } else {
+      newSelectedCountries.splice(currentIndex, 1);
+    }
+
+    setSelectedCountries(newSelectedCountries);
   };
 
   const filteredCountries = selectedContinent
@@ -31,25 +46,41 @@ const Fetch = () => {
     : countries;
 
   return (
-    <div>
-      <label htmlFor="continent">Select a continent: </label>
-      <select id="continent" value={selectedContinent} onChange={handleContinentChange}>
-        <option value="">All</option>
-        {continents.map(continent => (
-          <option key={continent} value={continent}>{continent}</option>
-        ))}
-      </select>
+    <Box sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper', margin: 'auto', padding: '20px' }}>
+      <FormControl fullWidth>
+        <InputLabel id="continent-label">Select a continent</InputLabel>
+        <Select
+          labelId="continent-label"
+          id="continent"
+          value={selectedContinent}
+          onChange={handleContinentChange}
+        >
+          <MenuItem value="">
+            <em>All</em>
+          </MenuItem>
+          {continents.map(continent => (
+            <MenuItem key={continent} value={continent}>{continent}</MenuItem>
+          ))}
+        </Select>
+      </FormControl>
 
-      <div>
+      <List>
         {filteredCountries.map((country, index) => (
-          <div key={index}>
-            <h1>{country.name}</h1>
-            <img src={country.flags.png} alt={`Flag of ${country.name}`} width={40} />
-            <h3>{country.region}</h3>
-          </div>
+          <ListItem key={index} button onClick={handleCountryToggle(country.name)}>
+            <ListItemIcon>
+              <Checkbox
+                edge="start"
+                checked={selectedCountries.indexOf(country.name) !== -1}
+                tabIndex={-1}
+                disableRipple
+                inputProps={{ 'aria-labelledby': country.name }}
+              />
+            </ListItemIcon>
+            <ListItemText id={country.name} primary={country.name} />
+          </ListItem>
         ))}
-      </div>
-    </div>
+      </List>
+    </Box>
   );
 };
 
