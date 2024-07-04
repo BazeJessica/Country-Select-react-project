@@ -5,6 +5,8 @@ const Fetch = () => {
   const [countries, setCountries] = useState([]);
   const [selectedContinent, setSelectedContinent] = useState('');
   const [selectedCountries, setSelectedCountries] = useState([]);
+  const [nameFilter, setNameFilter] = useState('');
+  const [userName, setUserName] = useState('');
 
   useEffect(() => {
     fetch('https://restcountries.com/v2/all')
@@ -41,13 +43,34 @@ const Fetch = () => {
     setSelectedCountries(newSelectedCountries);
   };
 
-  const filteredCountries = selectedContinent
-    ? countries.filter(country => country.region === selectedContinent)
-    : countries;
+  const handleNameFilterChange = (event) => {
+    setNameFilter(event.target.value);
+  };
+
+  const handleUserNameChange = (event) => {
+    setUserName(event.target.value);
+  };
+
+  const filteredCountries = countries.filter(country => {
+    const matchesContinent = selectedContinent ? country.region === selectedContinent : false;
+    const matchesName = country.name.toLowerCase().includes(nameFilter.toLowerCase());
+    return matchesContinent && matchesName;
+  });
 
   return (
     <Box sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper', margin: 'auto', padding: '20px' }}>
-      <FormControl fullWidth>
+      <div>
+        <label htmlFor="user-name">Enter your name: </label>
+        <input
+          type="text"
+          id="user-name"
+          value={userName}
+          onChange={handleUserNameChange}
+          style={{ width: '100%', marginBottom: '20px', padding: '10px', boxSizing: 'border-box' }}
+        />
+      </div>
+
+      <FormControl fullWidth sx={{ mb: 2 }}>
         <InputLabel id="continent-label">Select a continent</InputLabel>
         <Select
           labelId="continent-label"
@@ -63,6 +86,17 @@ const Fetch = () => {
           ))}
         </Select>
       </FormControl>
+
+      <div>
+        <label htmlFor="name-filter">Filter by country name: </label>
+        <input
+          type="text"
+          id="name-filter"
+          value={nameFilter}
+          onChange={handleNameFilterChange}
+          style={{ width: '100%', marginBottom: '20px', padding: '10px', boxSizing: 'border-box' }}
+        />
+      </div>
 
       <List>
         {filteredCountries.map((country, index) => (
