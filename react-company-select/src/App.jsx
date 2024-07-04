@@ -1,5 +1,5 @@
 import React from "react";
-import Fetch from "./Component/Fetch";
+import CustomRender from "./Component/customRender";
 // import Schema from "./Schema";
 
 
@@ -7,7 +7,7 @@ const App= () => {
   return (
    <>
    
-    <Fetch />
+    <CustomRender />
    
    </>
      
