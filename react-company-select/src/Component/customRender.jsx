@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { JsonForms } from '@jsonforms/react';
 import { materialRenderers, materialCells } from '@jsonforms/material-renderers';
-import { Box, List, ListItem, ListItemIcon, ListItemText, Checkbox } from '@mui/material';
+import { Box, List, ListItem, ListItemIcon, ListItemText, Checkbox, TextField } from '@mui/material';
 
 const schema = {
   type: "object",
@@ -9,11 +9,6 @@ const schema = {
     userName: {
       type: "string",
       title: "Enter your name"
-    },
-    selectedContinent: {
-      type: "string",
-      title: "Select a continent",
-      enum: ["", "Africa", "Americas", "Asia", "Europe", "Oceania", "Polar", "Antarctic Ocean"]
     },
     nameFilter: {
       type: "string",
@@ -31,23 +26,19 @@ const uischema = {
     },
     {
       type: "Control",
-      scope: "#/properties/selectedContinent"
-    },
-    {
-      type: "Control",
       scope: "#/properties/nameFilter"
     }
   ]
 };
 
-const customRender= () => {
+const customRender = () => {
   const [countries, setCountries] = useState([]);
   const [formData, setFormData] = useState({
     userName: '',
-    selectedContinent: '',
     nameFilter: ''
   });
   const [selectedCountries, setSelectedCountries] = useState([]);
+  const [showCountryList, setShowCountryList] = useState(false); // State to toggle displaying country list
 
   useEffect(() => {
     fetch('https://restcountries.com/v2/all')
@@ -56,6 +47,10 @@ const customRender= () => {
         setCountries(data);
       });
   }, []);
+
+  const handleToggleCountryList = () => {
+    setShowCountryList(!showCountryList);
+  };
 
   const handleCountryToggle = (countryName) => () => {
     const currentIndex = selectedCountries.indexOf(countryName);
@@ -70,21 +65,9 @@ const customRender= () => {
     setSelectedCountries(newSelectedCountries);
   };
 
-  useEffect(() => {
-    if (formData.selectedContinent) {
-      const countriesInContinent = countries
-        .filter(country => country.region === formData.selectedContinent)
-        .map(country => country.name);
-      setSelectedCountries(countriesInContinent);
-    } else {
-      setSelectedCountries([]);
-    }
-  }, [formData.selectedContinent, countries]);
-
   const filteredCountries = countries.filter(country => {
-    const matchesContinent = formData.selectedContinent ? country.region === formData.selectedContinent : false;
     const matchesName = country.name.toLowerCase().includes(formData.nameFilter.toLowerCase());
-    return matchesContinent && matchesName;
+    return matchesName;
   });
 
   return (
@@ -98,22 +81,34 @@ const customRender= () => {
         onChange={({ data }) => setFormData(data)}
       />
       
-      <List>
-        {filteredCountries.map((country, index) => (
-          <ListItem key={index} button onClick={handleCountryToggle(country.name)}>
-            <ListItemIcon>
-              <Checkbox
-                edge="start"
-                checked={selectedCountries.indexOf(country.name) !== -1}
-                tabIndex={-1}
-                disableRipple
-                inputProps={{ 'aria-labelledby': country.name }}
-              />
-            </ListItemIcon>
-            <ListItemText id={country.name} primary={country.name} />
-          </ListItem>
-        ))}
-      </List>
+      <TextField
+        onClick={handleToggleCountryList}
+        variant="outlined"
+        label="Choose a country"
+        fullWidth
+        InputProps={{
+          readOnly: true,
+        }}
+      />
+
+      {showCountryList && (
+        <List>
+          {filteredCountries.map((country, index) => (
+            <ListItem key={index} button onClick={handleCountryToggle(country.name)}>
+              <ListItemIcon>
+                <Checkbox
+                  edge="start"
+                  checked={selectedCountries.indexOf(country.name) !== -1}
+                  tabIndex={-1}
+                  disableRipple
+                  inputProps={{ 'aria-labelledby': country.name }}
+                />
+              </ListItemIcon>
+              <ListItemText id={country.name} primary={country.name} />
+            </ListItem>
+          ))}
+        </List>
+      )}
     </Box>
   );
 };
