@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { JsonForms } from '@jsonforms/react';
 import { materialRenderers, materialCells } from '@jsonforms/material-renderers';
-import { Box, List, ListItem, ListItemIcon, ListItemText, Checkbox, TextField } from '@mui/material';
+import { Box } from '@mui/material';
+import CountryCheckBoxControl from './checkBox';
+import CountryCheckBoxControlTester from './checkBoxTester';
 
 const schema = {
   type: "object",
@@ -10,10 +12,10 @@ const schema = {
       type: "string",
       title: "Enter your name"
     },
-    nameFilter: {
+    conti: {
       type: "string",
-      title: "Filter by country name"
-    }
+      title: "Visited countries",
+    },
   }
 };
 
@@ -26,91 +28,54 @@ const uischema = {
     },
     {
       type: "Control",
-      scope: "#/properties/nameFilter"
-    }
+      scope: "#/properties/conti",
+    },
   ]
 };
 
-const customRender = () => {
-  const [countries, setCountries] = useState([]);
-  const [formData, setFormData] = useState({
-    userName: '',
-    nameFilter: ''
-  });
-  const [selectedCountries, setSelectedCountries] = useState([]);
-  const [showCountryList, setShowCountryList] = useState(false); // State to toggle displaying country list
+const CustomRender = () => {
+  const [formData, setFormData] = useState({userName: '',conti: []});
+  const continents = ["Africa", "Americas", "Asia", "Europe", "Oceania", "Polar", "Antarctic Ocean"]
 
   useEffect(() => {
-    fetch('https://restcountries.com/v2/all')
-      .then((res) => res.json())
-      .then((data) => {
-        setCountries(data);
-      });
+    const filtered_continents = []
+    continents.map(c => {
+        fetch(`https://restcountries.com/v3.1/region/${c}`)
+        .then((res) => res.json())
+        .then((data) => {
+            filtered_continents.push({ 
+                continent: c, 
+                select_all: false, 
+                countries: data.map(country => { 
+                    return {
+                      name: country.name.common,
+                      is_selected: false
+                    } 
+                })
+            })
+            setFormData({...formData, conti: filtered_continents})
+        });
+    })
   }, []);
 
-  const handleToggleCountryList = () => {
-    setShowCountryList(!showCountryList);
-  };
 
-  const handleCountryToggle = (countryName) => () => {
-    const currentIndex = selectedCountries.indexOf(countryName);
-    const newSelectedCountries = [...selectedCountries];
-
-    if (currentIndex === -1) {
-      newSelectedCountries.push(countryName);
-    } else {
-      newSelectedCountries.splice(currentIndex, 1);
-    }
-
-    setSelectedCountries(newSelectedCountries);
-  };
-
-  const filteredCountries = countries.filter(country => {
-    const matchesName = country.name.toLowerCase().includes(formData.nameFilter.toLowerCase());
-    return matchesName;
-  });
+  const renderers = [
+    ...materialRenderers,
+    { tester: CountryCheckBoxControlTester, renderer : CountryCheckBoxControl }
+]
 
   return (
     <Box sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper', margin: 'auto', padding: '20px' }}>
-      <JsonForms
+     { formData.conti.length > 0 &&  <JsonForms
         schema={schema}
         uischema={uischema}
         data={formData}
-        renderers={materialRenderers}
+        renderers={renderers}
         cells={materialCells}
         onChange={({ data }) => setFormData(data)}
-      />
-      
-      <TextField
-        onClick={handleToggleCountryList}
-        variant="outlined"
-        label="Choose a country"
-        fullWidth
-        InputProps={{
-          readOnly: true,
-        }}
-      />
-
-      {showCountryList && (
-        <List>
-          {filteredCountries.map((country, index) => (
-            <ListItem key={index} button onClick={handleCountryToggle(country.name)}>
-              <ListItemIcon>
-                <Checkbox
-                  edge="start"
-                  checked={selectedCountries.indexOf(country.name) !== -1}
-                  tabIndex={-1}
-                  disableRipple
-                  inputProps={{ 'aria-labelledby': country.name }}
-                />
-              </ListItemIcon>
-              <ListItemText id={country.name} primary={country.name} />
-            </ListItem>
-          ))}
-        </List>
-      )}
+      />}
     </Box>
   );
 };
 
-export default customRender;
+export default CustomRender;
